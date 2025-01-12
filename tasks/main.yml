@@ -1,0 +1,43 @@
+---
+- name: Check whether AWS SAM CLI is installed
+  ansible.builtin.shell: sam --version
+  register: awssamcli_installed
+  changed_when: false
+  ignore_errors: true
+  environment:
+    PATH: "/usr/local/bin:{{ ansible_env.PATH }}"
+
+- name: Install required packages
+  ansible.builtin.package:
+    name: unzip
+    state: present
+  when: awssamcli_installed is failed
+
+- name: Delete working directory
+  ansible.builtin.file:
+    path: '{{ awssamcli_working_dir }}'
+    state: absent
+  when: awssamcli_installed is failed
+
+- name: Create working directory
+  ansible.builtin.file:
+    path: '{{ awssamcli_working_dir }}/sam-installation'
+    recurse: yes
+    state: directory
+  when: awssamcli_installed is failed
+
+- name: Get AWS SAM CLI installer
+  ansible.builtin.unarchive:
+    src: https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip
+    dest: '{{ awssamcli_working_dir }}/sam-installation'
+    remote_src: yes
+  when: awssamcli_installed is failed
+
+- name: Install AWS SAM CLI
+  ansible.builtin.shell: ./sam-installation/install
+  args:
+    chdir: '{{ awssamcli_working_dir }}'
+  changed_when: false
+  environment:
+    PATH: "/usr/local/bin:{{ ansible_env.PATH }}"
+  when: awssamcli_installed is failed

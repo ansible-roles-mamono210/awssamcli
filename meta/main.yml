@@ -1,0 +1,14 @@
+---
+dependencies: []
+galaxy_info:
+  author: mamono210
+  company: no name
+  description: AWS SAM CLI installation for Linux.
+  galaxy_tags: []
+  license: "license (BSD, MIT)"
+  min_ansible_version: 11.0.0
+  role_name: awssamcli
+  platforms:
+    - name: EL
+      release:
+        - 9

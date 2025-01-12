@@ -1,0 +1,25 @@
+---
+- name: Verify
+  hosts: all
+
+  tasks:
+    - name: Check whether AWS SAM CLI is installed
+      ansible.builtin.command: sam --version
+      register: awssamcli_version
+      changed_when: false
+      ignore_errors: true
+      environment:
+        PATH: "/usr/local/bin:{{ ansible_env.PATH }}"
+
+    - name: Check OS version
+      ansible.builtin.command: cat /etc/redhat-release
+      register: os_version
+      changed_when: false
+
+    - name: Show SAM AWS CLI version
+      ansible.builtin.debug:
+        var: awssamcli_version
+
+    - name: Show OS version
+      ansible.builtin.debug:
+        var: os_version
